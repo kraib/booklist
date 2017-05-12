@@ -262,7 +262,12 @@ class SubjectList extends Component<any, any> {
                 },
                 moves: function (el, source, handle, sibling) {
                     //return true;
-                    return handle.classList.contains('fa-arrows');
+
+                    if (handle.classList.contains('fa-arrows') && el.tagName == 'LI'){
+                        return $(handle).closest('li')[0] === el;
+                    } else {
+                        return false;
+                    }
                     //return false; // elements are always draggable by default
                 },
                 // invalid: function (el, handle) {
