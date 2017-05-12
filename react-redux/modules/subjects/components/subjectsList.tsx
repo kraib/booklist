@@ -7,43 +7,13 @@ import BootstrapButton, {AjaxButton} from 'applicationRoot/components/bootstrapB
 import ColorsPalette from 'applicationRoot/components/colorsPalette';
 import { store } from 'applicationRoot/store';
 import {subjectType} from 'modules/subjects/reducers/reducer';
+import Dragula from 'react-dragula';
 
 type dragLayerType = {
     item: any;
     currentOffset: {x: number, y: number};
     isDragging: boolean
 };
-
-@connect((state, ownProps) => {
-    return {
-        currentlyDragging: state.subjectsModule.draggingId
-    }
-})
-class SubjectDragLayer extends Component<{currentlyDragging: string} & dragLayerType, any> {
-    render(){
-        let {isDragging, currentOffset, item, currentlyDragging} = this.props;
-        if (!currentOffset || !item || !currentlyDragging || !isDragging) return null;
-        let {x, y} = currentOffset;
-
-        const parentStyles = {
-            position: 'fixed',
-            pointerEvents: 'none',
-            zIndex: 100,
-            left: 0,
-            top: 0,
-            width: '100%',
-            height: '100%'
-        };
-        const itemTransform = `translate(${x}px, ${y}px)`;
-
-        return isDragging ?
-            <div style={parentStyles}>
-                <div style={{transform: itemTransform}}>
-                    <h3>{item.name}</h3>
-                </div>
-            </div>: null;
-    }
-}
 
 type dropTargetType = {
     isOver: boolean;
@@ -298,15 +268,12 @@ export default class SubjectsComponent extends Component<subjectsComponentPropsT
             rootPendingSubjects = pendingSubjectsLookup['root'] || [],
             allSubjects = [...rootPendingSubjects, ...topLevelSubjects];
 
-        let SDL : any = SubjectDragLayer;
-
         return (
             <div style={{ marginLeft: '10px', marginRight: '10px' }}>
                 <BootstrapButton onClick={() => addNewSubject()} preset="primary">New subject</BootstrapButton>
                 <br />
                 <br />
                 <SubjectList subjects={allSubjects} />
-                {isTouch ? <SDL /> : null}
             </div>
         )
     }
