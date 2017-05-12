@@ -3,9 +3,6 @@ import {connect} from 'react-redux';
 import {editingSubjectHashSelector, pendingSubjectsSelector, draggingSubjectSelector} from 'modules/subjects/reducers/reducer';
 import {subjectChildMapSelector, topLevelSubjectsSortedSelector, getChildSubjectsSorted} from 'applicationRoot/rootReducer';
 import * as actionCreators from 'modules/subjects/reducers/actionCreators';
-import {DragSource, DragDropContext, DropTarget, DragLayer} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import TouchBackend from 'react-dnd-touch-backend';
 import BootstrapButton, {AjaxButton} from 'applicationRoot/components/bootstrapButton';
 import ColorsPalette from 'applicationRoot/components/colorsPalette';
 import { store } from 'applicationRoot/store';
@@ -20,13 +17,6 @@ type dragLayerType = {
 @connect((state, ownProps) => {
     return {
         currentlyDragging: state.subjectsModule.draggingId
-    }
-})
-@DragLayer((monitor, x) => {
-    return {
-        item: monitor.getItem(),
-        currentOffset: monitor.getSourceClientOffset(),
-        isDragging: monitor.isDragging()
     }
 })
 class SubjectDragLayer extends Component<{currentlyDragging: string} & dragLayerType, any> {
@@ -56,7 +46,6 @@ class SubjectDragLayer extends Component<{currentlyDragging: string} & dragLayer
 }
 
 type dropTargetType = {
-    connectDropTarget: any;
     isOver: boolean;
     canDrop: boolean;
 }
@@ -72,29 +61,6 @@ type subjectDisplayProps = {
         isCurrentDropTarget: state.subjectsModule.currentDropCandidateId == ownProps.subject._id
     }
 }, { ...actionCreators })
-@DropTarget('subject', {
-    canDrop(props, monitor){
-        let sourceSubject = monitor.getItem(),
-            { subject: targetSubject } = props,
-            isCurrentParent = sourceSubject.path && new RegExp(`,${targetSubject._id},$`).test(sourceSubject.path);
-
-        return sourceSubject._id != targetSubject._id
-                && !targetSubject.pending
-                && !isCurrentParent
-                && monitor.isOver()
-                && (targetSubject.path || '').indexOf(sourceSubject._id) < 0;
-    },
-    drop(props, monitor){
-        let {subject: targetSubject} = props,
-            sourceSubject = monitor.getItem();
-
-        props.setNewParent(sourceSubject, targetSubject);
-    }
-}, (connect, monitor) => ({
-    connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver(),
-    canDrop: monitor.canDrop()
-}))
 class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarget: boolean} & dropTargetType, any> {
     componentDidUpdate(prevProps){
         let wasOver = prevProps.isOver && prevProps.canDrop,
@@ -111,7 +77,7 @@ class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarge
         }
     }
     render(){
-        let {subject, connectDropTarget} = this.props,
+        let {subject} = this.props,
             {_id, candidateMove} = subject,
             pendingSubjectDrop = this.props.isOver && this.props.canDrop,
             style: any = {},
@@ -123,7 +89,7 @@ class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarge
 
         return (
             <li className={`list-group-item ${pendingSubjectDrop ? 'pending-subject-drop' : ''}`} key={_id} style={{...style, paddingTop: 0, paddingBottom: 0}}>
-                <SubjectDisplayContent connectDropTarget={connectDropTarget} noDrop={noDrop} subject={subject} />
+                <SubjectDisplayContent noDrop={noDrop} subject={subject} />
             </li>
         );
     }
@@ -158,28 +124,13 @@ class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarge
         colors: state.app.colors
     }
 }, {...actionCreators})
-@DragSource('subject', {
-    beginDrag: props => {
-        props.beginDrag(props.subject._id);
-        return props.subject;
-    },
-    endDrag: props => {
-        props.clearSubjectDragging();
-    }
-}, (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    connectDragPreview: connect.dragPreview()
-}))
 class SubjectDisplayContent extends Component<any, any> {
     render(){
         let {
                 subject,
-                connectDragSource,
-                connectDragPreview,
                 noDrop,
                 isPendingDelete,
                 isDeleting,
-                connectDropTarget,
                 childSubjects = [],
                 pendingChildren = [],
                 isEditingSubject,
@@ -198,17 +149,15 @@ class SubjectDisplayContent extends Component<any, any> {
 
         let classToPass = 'row padding-top padding-bottom';
         return (
-            connectDragPreview(
-                <div>
-                    {isEditingSubject ? <EditingSubjectDisplay className={classToPass} subject={subject} isSubjectSaving={isSubjectSaving} editingSubject={editingSubject} colors={colors} /> :
-                        isDeleting ? <DeletingSubjectDisplay className={classToPass} name={subject.name} /> :
-                            isPendingDelete ? <PendingDeleteSubjectDisplay className={classToPass} subject={subject} deleteMessage={deleteMessage} /> :
-                                <DefaultSubjectDisplay className={classToPass} subject={subject} connectDragSource={connectDragSource} connectDropTarget={connectDropTarget} noDrop={noDrop} isSubjectSaving={isSubjectSaving} isSubjectSaved={isSubjectSaved} />
-                    }
+            <div>
+                {isEditingSubject ? <EditingSubjectDisplay className={classToPass} subject={subject} isSubjectSaving={isSubjectSaving} editingSubject={editingSubject} colors={colors} /> :
+                    isDeleting ? <DeletingSubjectDisplay className={classToPass} name={subject.name} /> :
+                        isPendingDelete ? <PendingDeleteSubjectDisplay className={classToPass} subject={subject} deleteMessage={deleteMessage} /> :
+                            <DefaultSubjectDisplay className={classToPass} subject={subject} noDrop={noDrop} isSubjectSaving={isSubjectSaving} isSubjectSaved={isSubjectSaved} />
+                }
 
-                    {effectiveChildren.length ? <SubjectList noDrop={noDrop} style={{ marginTop: 0 }} subjects={effectiveChildren} /> : null}
-                </div>
-            )
+                {effectiveChildren.length ? <SubjectList noDrop={noDrop} style={{ marginTop: 0 }} subjects={effectiveChildren} /> : null}
+            </div>
         )
     }
 }
@@ -216,14 +165,14 @@ class SubjectDisplayContent extends Component<any, any> {
 @connect(null, {...actionCreators})
 class DefaultSubjectDisplay extends Component<any, any> {
     render(){
-        let {connectDropTarget, connectDragSource, isSubjectSaving, isSubjectSaved, className, subject, beginSubjectEdit, addNewSubject, beginSubjectDelete, noDrop} = this.props,
+        let {isSubjectSaving, isSubjectSaved, className, subject, beginSubjectEdit, addNewSubject, beginSubjectDelete, noDrop} = this.props,
             {_id, name} = subject,
             mainIcon =
                 isSubjectSaving ? <i className="fa fa-fw fa-spinner fa-spin"></i> :
                     isSubjectSaved ? <i style={{color: 'green'}} className="fa fa-fw fa-check"></i> :
-                        connectDragSource(<i className="fa fa-fw fa-arrows"></i>);
+                        <i className="fa fa-fw fa-arrows"></i>;
 
-        return (noDrop ? c=>c : connectDropTarget)(
+        return (
             <div className={className}>
                 <div className="col-lg-12 show-on-hover-parent">
                     {mainIcon}&nbsp;
@@ -336,7 +285,7 @@ type subjectsComponentPropsType = {
     topLevelSubjects: any, pendingSubjectsLookup: any, addNewSubject: any
 }
 
-@DragDropContext(isTouch ? TouchBackend : HTML5Backend)
+
 @connect(state => {
     return {
         topLevelSubjects: topLevelSubjectsSortedSelector(state),
