@@ -144,7 +144,7 @@ class DefaultSubjectDisplay extends Component<any, any> {
 
         return (
             <div className={className}>
-                <div className="col-lg-12 show-on-hover-parent">
+                <div className="col-lg-12 show-on-hover-parent main-subject-display" >
                     {mainIcon}&nbsp;
                     {name}
                     {' '}
@@ -246,8 +246,35 @@ class SubjectList extends Component<any, any> {
 
         let SD : any = SubjectDisplay;
 
-        return <ul className="list-group" style={{ marginBottom: '5px', ...style }}>{this.props.subjects.map(subject => <SD key={subject._id} noDrop={noDrop} subject={subject} />)}</ul>;
+        return (
+            <ul className="list-group" style={{ marginBottom: '5px', ...style }} ref={this.dragulaDecorator}>
+                {this.props.subjects.map(subject => <SD key={subject._id} noDrop={noDrop} subject={subject} />)}
+            </ul>
+        );
     }
+    dragulaDecorator = (componentBackingInstance) => {
+        if (componentBackingInstance) {
+            let options = { };
+            Dragula([componentBackingInstance], {
+                direction: 'vertical',
+                accepts: function (el, target, source, sibling) {
+                    return false; // elements can be dropped in any of the `containers` by default
+                },
+                moves: function (el, source, handle, sibling) {
+                    //return true;
+                    return handle.classList.contains('fa-arrows');
+                    //return false; // elements are always draggable by default
+                },
+                // invalid: function (el, handle) {
+                //     let isMainSubject = el && el.classList && el.classList.contains('main-subject-display');
+                //     console.log(!!isMainSubject);
+                //     return !isMainSubject;
+                //     //debugger;
+                //     //return false; // don't prevent any drags from initiating by default
+                // },
+            });
+        }
+    };
 }
 let isTouch = store.getState().app.isTouch
 
