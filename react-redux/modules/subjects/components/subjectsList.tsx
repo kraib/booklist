@@ -26,12 +26,16 @@ type subjectDisplayProps = {
     noDrop: boolean;
 };
 
+type renders = {
+    onRender: () => void
+}
+
 @connect((state, ownProps) => {
     return {
         isCurrentDropTarget: state.subjectsModule.currentDropCandidateId == ownProps.subject._id
     }
 }, { ...actionCreators })
-class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarget: boolean} & dropTargetType, any> {
+class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarget: boolean} & dropTargetType & renders, any> {
     componentDidUpdate(prevProps){
         let wasOver = prevProps.isOver && prevProps.canDrop,
             isOver = this.props.isOver && this.props.canDrop,
@@ -47,7 +51,7 @@ class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarge
         }
     }
     render(){
-        let {subject} = this.props,
+        let {subject, onRender} = this.props,
             {_id, candidateMove} = subject,
             pendingSubjectDrop = this.props.isOver && this.props.canDrop,
             style: any = {},
@@ -59,7 +63,7 @@ class SubjectDisplay extends Component<subjectDisplayProps & {isCurrentDropTarge
 
         return (
             <li className={`list-group-item ${pendingSubjectDrop ? 'pending-subject-drop' : ''}`} key={_id} style={{...style, paddingTop: 0, paddingBottom: 0}}>
-                <SubjectDisplayContent noDrop={noDrop} subject={subject} />
+                <SubjectDisplayContent onRender={onRender} noDrop={noDrop} subject={subject} />
             </li>
         );
     }
@@ -108,7 +112,8 @@ class SubjectDisplayContent extends Component<any, any> {
                 isSubjectSaving,
                 isSubjectSaved,
                 editingSubject,
-                colors
+                colors,
+                onRender
             } = this.props,
             effectiveChildren = pendingChildren.concat(childSubjects),
             deleteMessage = childSubjects.length ? 'Confirm - child subjects will also be deleted' : 'Confirm Delete';
@@ -126,7 +131,7 @@ class SubjectDisplayContent extends Component<any, any> {
                             <DefaultSubjectDisplay className={classToPass} subject={subject} noDrop={noDrop} isSubjectSaving={isSubjectSaving} isSubjectSaved={isSubjectSaved} />
                 }
 
-                {effectiveChildren.length ? <SubjectList noDrop={noDrop} style={{ marginTop: 0 }} subjects={effectiveChildren} /> : null}
+                {effectiveChildren.length ? <SubjectList onRender={onRender} id={subject._id} noDrop={noDrop} style={{ marginTop: 0 }} subjects={effectiveChildren} /> : null}
             </div>
         )
     }
@@ -242,44 +247,16 @@ class DeletingSubjectDisplay extends Component<any, any> {
 
 class SubjectList extends Component<any, any> {
     render(){
-        let {style = {}, noDrop} = this.props;
+        let {style = {}, noDrop, id, onRender} = this.props;
 
         let SD : any = SubjectDisplay;
 
         return (
-            <ul className="list-group" style={{ marginBottom: '5px', ...style }} ref={this.dragulaDecorator}>
-                {this.props.subjects.map(subject => <SD key={subject._id} noDrop={noDrop} subject={subject} />)}
+            <ul id={id} className="list-group" style={{ marginBottom: '5px', ...style }} ref={onRender}>
+                {this.props.subjects.map(subject => <SD onRender={onRender} key={subject._id} noDrop={noDrop} subject={subject} />)}
             </ul>
         );
     }
-    dragulaDecorator = (componentBackingInstance) => {
-        if (componentBackingInstance) {
-            let options = { };
-            Dragula([componentBackingInstance], {
-                direction: 'vertical',
-                accepts: function (el, target, source, sibling) {
-                    return false; // elements can be dropped in any of the `containers` by default
-                },
-                moves: function (el, source, handle, sibling) {
-                    //return true;
-
-                    if (handle.classList.contains('fa-arrows') && el.tagName == 'LI'){
-                        return $(handle).closest('li')[0] === el;
-                    } else {
-                        return false;
-                    }
-                    //return false; // elements are always draggable by default
-                },
-                // invalid: function (el, handle) {
-                //     let isMainSubject = el && el.classList && el.classList.contains('main-subject-display');
-                //     console.log(!!isMainSubject);
-                //     return !isMainSubject;
-                //     //debugger;
-                //     //return false; // don't prevent any drags from initiating by default
-                // },
-            });
-        }
-    };
 }
 let isTouch = store.getState().app.isTouch
 
@@ -287,6 +264,14 @@ type subjectsComponentPropsType = {
     topLevelSubjects: any, pendingSubjectsLookup: any, addNewSubject: any
 }
 
+const closest = (el, target : string) => {
+    let node = el;
+    do {
+        if (node.tagName.toUpperCase() == target.toUpperCase()){
+            return node;
+        }
+    } while (node = node.parentNode);
+}
 
 @connect(state => {
     return {
@@ -295,17 +280,36 @@ type subjectsComponentPropsType = {
     };
 }, { ...actionCreators })
 export default class SubjectsComponent extends Component<subjectsComponentPropsType & typeof actionCreators, any>{
+    dragulaInstance = null;
+    addContainer = container => {
+        if (this.dragulaInstance && !this.dragulaInstance.containers.find(c => c == container)){
+            this.dragulaInstance.containers.push(container);
+        }
+    }
+    dragulaDecorator = (rootEl) => {
+        if (rootEl) {
+            this.dragulaInstance = Dragula([], {
+                accepts(el, target, source, sibling) {
+                    return false;
+                },
+                moves(el, source, handle, sibling) {
+                    return handle.classList.contains('fa-arrows') && el.tagName == 'LI' &&  closest(handle, 'li') === el;
+                }
+            });
+            Array.from(rootEl.querySelectorAll('ul')).forEach(el => this.addContainer(el));
+        }
+    };
     render(){
         let {addNewSubject, pendingSubjectsLookup, topLevelSubjects} = this.props,
             rootPendingSubjects = pendingSubjectsLookup['root'] || [],
             allSubjects = [...rootPendingSubjects, ...topLevelSubjects];
 
         return (
-            <div style={{ marginLeft: '10px', marginRight: '10px' }}>
+            <div style={{ marginLeft: '10px', marginRight: '10px' }} ref={this.dragulaDecorator}>
                 <BootstrapButton onClick={() => addNewSubject()} preset="primary">New subject</BootstrapButton>
                 <br />
                 <br />
-                <SubjectList subjects={allSubjects} />
+                <SubjectList id="root" subjects={allSubjects} onRender={this.addContainer} />
             </div>
         )
     }
