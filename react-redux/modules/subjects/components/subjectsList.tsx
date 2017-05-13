@@ -290,6 +290,7 @@ export default class SubjectsComponent extends Component<subjectsComponentPropsT
         if (rootEl) {
             this.dragulaInstance = Dragula([], {
                 accepts(el, target, source, sibling) {
+                    //console.log('accepts', target.id)
                     return false;
                 },
                 moves(el, source, handle, sibling) {
@@ -297,6 +298,19 @@ export default class SubjectsComponent extends Component<subjectsComponentPropsT
                 }
             });
             Array.from(rootEl.querySelectorAll('ul')).forEach(el => this.addContainer(el));
+
+            this.dragulaInstance.on('shadow', (el, container, source) => {
+                console.log('shadow', container.id);
+            });
+            this.dragulaInstance.on('over', (el, container, source) => {
+                console.log('shadow', container.id);
+            });
+            this.dragulaInstance.on('out', (el, container, source) => {
+                console.log('shadow', container.id);
+            });
+            this.dragulaInstance.on('drop', (el, container, source) => {
+                console.log('shadow', container.id);
+            });
         }
     };
     render(){
