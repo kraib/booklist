@@ -2,7 +2,6 @@ require('dotenv').config();
 
 require('regenerator/runtime');
 
-require('./node-dest/app-helpers/promiseUtils');
 
 const express = require('express');
 const app = express();
