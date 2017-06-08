@@ -18,23 +18,6 @@ declare global {
   var System: System
 }
 
-if ('ontouchstart' in window || 'onmsgesturechange' in window){
-    store.dispatch(setIsTouch(true));
-}
-
-try {
-    var desktopRequested = !!localStorage.getItem('useDesktop');
-} catch(x){ }
-
-if (window.screen.width < 700) {
-    store.dispatch(setMobile());
-} else {
-    store.dispatch(setDesktop());
-}
-
-if (desktopRequested){
-    store.dispatch(setRequestDesktop());
-}
 
 let currentModule;
 let currentModuleObject;
@@ -43,72 +26,15 @@ let publicUserCache = {};
 const history = createHistory()
 export {history};
 
-const validModules = new Set(['books', 'scan', 'home', 'activate', 'view', 'subjects', 'settings']);
-let initial = true;
-const unlisten = history.listen((location, action) => {
-  // location is an object like window.location 
-  loadModule(location);
-});
-loadCurrentModule();
 
 export function loadCurrentModule(){
     loadModule(history.location);
 }
 
+loadModule('books');
 function loadModule(location) {
-    let originalModule = location.pathname.replace(/\//g, '').toLowerCase(),
-        module = originalModule || 'home',
-        publicModule = module === 'view' || module == 'activate';
-
-    let {logged_in, userId: currentUserId} = isLoggedIn(),
-        loggedIn = logged_in && currentUserId;
-
-    if (!loggedIn && !publicModule){
-        if (originalModule && module != 'home'){
-            module = 'authenticate';
-        } else {
-            module = 'home';
-        }
-    } else {
-        if (!validModules.has(module)){
-            history.push('/books');
-            return;
-        }
-    }
-
-    if (loggedIn){
-        store.dispatch(setLoggedIn(currentUserId));
-    }
-
-    if (publicModule){
-        var userId = getCurrentHistoryState().searchState.userId;
-
-        //switching to a new public viewing - reload page
-        if (!initial && store.getState().app.publicUserId != userId){
-            window.location.reload();
-            return;
-        }
-
-        var publicUserPromise = userId ? (publicUserCache[userId] || (publicUserCache[userId] = fetchPublicUserInfo(userId))) : null;
-
-        if (module === 'view') {
-            module = 'books';
-        }
-    } else if (store.getState().app.publicUserId){
-        //leaving public viewing - reload page
-        window.location.reload();
-        return;
-    }
-
-    initial = false;
-
-    if (module === currentModule) {
-        return;
-    }
-    currentModule = module;
-
     let modulePromise = (() => {
-        switch(module.toLowerCase()){
+        switch(location.toLowerCase()){
             case 'activate': return System.import(/* webpackChunkName: "small-modules" */ './modules/activate/activate');
             case 'authenticate': return System.import(/* webpackChunkName: "small-modules" */ './modules/authenticate/authenticate');
             case 'books': return System.import(/* webpackChunkName: "books-module" */ './modules/books/books');
@@ -120,21 +46,8 @@ function loadModule(location) {
     })();
 
     Promise.all([
-        modulePromise,
-        publicUserPromise
-    ]).then(([{ default: moduleObject }, publicUserInfo]) => {
-        if (currentModule != module) return;
-        
-        currentModuleObject = moduleObject;
-        store.dispatch(setModule(currentModule));
-
-        if (publicUserInfo){
-            store.dispatch(setPublicInfo({...publicUserInfo, userId}));
-        }
-
-        if (moduleObject.reducer) {
-            getNewReducer({name: module, reducer: moduleObject.reducer, initialize: moduleObject.initialize});
-        }
+        modulePromise
+    ]).then(([{ default: moduleObject }]) => {
         renderUI(createElement(moduleObject.component));
     });
 }
