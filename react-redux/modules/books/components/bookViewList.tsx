@@ -106,10 +106,12 @@ export default class BookViewingList extends Component<mainSelectorType & action
     }
     render() {
         let editingBook = this.props.editingBook,
-            dragTitle = editingBook ? `Click or drag to upload a ${editingBook.smallImage ? 'new' : ''} cover image.  The uploaded image will be scaled down as needed` : '';
+            dragTitle = editingBook ? `Click or drag to upload a ${editingBook.smallImage ? 'new' : ''} cover image.  The uploaded image will be scaled down as needed` : '',
+            {navBarHeight} = this.state;
 
         return (
             <div style={{position: 'relative'}}>
+                <div style={{position: 'fixed', zIndex: 490, left: 0, right: 0, backgroundColor: 'white', top: 50, height: navBarHeight}}></div>
                 {this.props.booksLoading || !this.props.subjectsLoaded || !this.props.tagsLoaded ? <Loading /> : null }
                 <div className="panel panel-default" style={{ margin: '10px' }}>
                     <BooksMenuBar navBarSized={this.navBarSized} />
