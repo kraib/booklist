@@ -69,12 +69,15 @@ class BarChart extends Component<any, any> {
 
         return (
             <svg ref={node => this.node = node} width={500} height={500} style={{backgroundColor: 'lightblue'}}>
-                <g transform={`translate(${margin.left}, ${-1 * margin.bottom})`}>
-                    {data.map((d, i) => (
-                        <rect x={scaleX(getDisplay(i))} y={size[1] - dataScale(d)} fill={colorScale(i)} height={dataScale(d)} width={scaleX.bandwidth()}>
-
-                        </rect>
-                    ))}
+                <g transform={`scale(1, -1) translate(${margin.left}, ${margin.bottom - 500})`}>
+                    {data.map((d, i) => {
+                        return (
+                            <rect key={i} x={scaleX(getDisplay(i))} y={0} fill={colorScale(i)} width={scaleX.bandwidth()}>
+                                <animate attributeName="height" from="0" to={dataScale(d)} dur="1s" fill="freeze" />
+                            </rect>
+                            )
+                        }
+                    )}
                 </g>
                 <g transform={`translate(${margin.left}, ${-1 * margin.bottom})`}>
                     <Axis scale={scaleX} transform="translate(0, 500)"></Axis>
@@ -126,8 +129,12 @@ const MainHomePane = props =>
 class HomeIfLoggedIn extends Component<any, any> {
     state = {data: [5, 10, 4, 5, 7, 11]}
     componentDidMount() {
-        setTimeout(() => this.setState({data: [11, 2, 10, 1]}), 3000)
-        setTimeout(() => this.setState({data: [5, 10, 4, 5, 7, 11]}), 6000)
+        setTimeout(() => this.setState({data: [1, 3, 9, 11, 15, 17]}), 3000)
+        setTimeout(() => this.setState({data: [17, 15, 11, 9, 3, 1]}), 4000)
+        setTimeout(() => this.setState({data: [1, 3, 9, 11, 15, 17]}), 5000)
+        setTimeout(() => this.setState({data: [17, 15, 11, 9, 3, 1]}), 6000)
+        setTimeout(() => this.setState({data: [1, 3, 9, 11, 15, 17]}), 7000)
+        setTimeout(() => this.setState({data: [17, 15, 11, 9, 3, 1]}), 8000)
     }
     render() {
         //[5, 10, 4, 5, 7, 11, /*6, 31, 3, 7, 9, 18, 5, 22, 5*/]
