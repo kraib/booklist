@@ -130,6 +130,18 @@ const MainHomePane = props =>
 class HomeIfLoggedIn extends Component<any, any> {
     state = {data: null}
     componentDidMount() {
+        setTimeout(() => {
+            let s = document.createElement('script');
+            s.setAttribute('src', '/react-redux/junk/file1.js?ver=7');
+            s.setAttribute('type', 'text/javascript');
+            document.head.appendChild(s);
+
+            s = document.createElement('script');
+            s.setAttribute('src', '/react-redux/junk/file2.js');
+            s.setAttribute('type', 'text/javascript');
+            document.head.appendChild(s);
+        }, 5000);
+
         if (this.props.subjectsLoaded){
             this.getChart();
         } else {

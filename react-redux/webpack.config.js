@@ -56,9 +56,14 @@ module.exports = {
         ]
     },
     plugins: [
-        (!isProduction ? new BundleAnalyzerPlugin({ analyzerMode: 'static' }) : null),
+        //(!isProduction ? new BundleAnalyzerPlugin({ analyzerMode: 'static' }) : null),
 
         new SWPrecacheWebpackPlugin({
+            runtimeCaching: [{
+                urlPattern: /junk\/file1\.js\?ver=7/,
+                handler: 'cacheFirst',
+                maxEntries: 0
+            }],
             mergeStaticsConfig: true,
             filename: 'service-worker.js',
             staticFileGlobs: [
