@@ -62,7 +62,12 @@ module.exports = {
             runtimeCaching: [{
                 urlPattern: /junk\/file1\.js\?ver=.*/,
                 handler: 'cacheFirst',
-                maxEntries: 3
+                options: {
+                    cache: {
+                        maxEntries: 1,
+                        name: 'my-cache'
+                    }
+                }
             }],
             mergeStaticsConfig: true,
             filename: 'service-worker.js',

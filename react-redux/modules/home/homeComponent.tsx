@@ -123,6 +123,9 @@ const MainHomePane = props =>
     </div>
 
     let xyz = 123;
+    let xyzzzzz = 123 + 'abc';
+    let x;
+    let y;
 
 @connect((state: RootApplicationType) => ({
     subjects: topLevelSubjectsSortedSelector(state),
@@ -134,10 +137,10 @@ class HomeIfLoggedIn extends Component<any, any> {
     componentDidMount() {
         setTimeout(() => {
             let s;
-            s = document.createElement('script');
-            s.setAttribute('src', '/react-redux/junk/file1.js?ver=1');
-            s.setAttribute('type', 'text/javascript');
-            document.head.appendChild(s);
+            // s = document.createElement('script');
+            // s.setAttribute('src', '/react-redux/junk/file1.js?ver=1');
+            // s.setAttribute('type', 'text/javascript');
+            // document.head.appendChild(s);
 
             s = document.createElement('script');
             s.setAttribute('src', '/react-redux/junk/file2.js');
