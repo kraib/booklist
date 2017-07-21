@@ -60,9 +60,9 @@ module.exports = {
 
         new SWPrecacheWebpackPlugin({
             runtimeCaching: [{
-                urlPattern: /junk\/file1\.js\?ver=7/,
+                urlPattern: /junk\/file1\.js\?ver=.*/,
                 handler: 'cacheFirst',
-                maxEntries: 0
+                maxEntries: 3
             }],
             mergeStaticsConfig: true,
             filename: 'service-worker.js',

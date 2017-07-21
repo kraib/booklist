@@ -122,6 +122,8 @@ const MainHomePane = props =>
         </div>
     </div>
 
+    let xyz = 123;
+
 @connect((state: RootApplicationType) => ({
     subjects: topLevelSubjectsSortedSelector(state),
     subjectHash: state.app.subjectHash,
@@ -131,8 +133,9 @@ class HomeIfLoggedIn extends Component<any, any> {
     state = {data: null}
     componentDidMount() {
         setTimeout(() => {
-            let s = document.createElement('script');
-            s.setAttribute('src', '/react-redux/junk/file1.js?ver=7');
+            let s;
+            s = document.createElement('script');
+            s.setAttribute('src', '/react-redux/junk/file1.js?ver=1');
             s.setAttribute('type', 'text/javascript');
             document.head.appendChild(s);
 
@@ -140,7 +143,7 @@ class HomeIfLoggedIn extends Component<any, any> {
             s.setAttribute('src', '/react-redux/junk/file2.js');
             s.setAttribute('type', 'text/javascript');
             document.head.appendChild(s);
-        }, 5000);
+        }, 3000);
 
         if (this.props.subjectsLoaded){
             this.getChart();
