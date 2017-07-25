@@ -137,15 +137,20 @@ class HomeIfLoggedIn extends Component<any, any> {
     componentDidMount() {
         setTimeout(() => {
             let s;
-            // s = document.createElement('script');
-            // s.setAttribute('src', '/react-redux/junk/file1.js?ver=1');
-            // s.setAttribute('type', 'text/javascript');
-            // document.head.appendChild(s);
-
             s = document.createElement('script');
-            s.setAttribute('src', '/react-redux/junk/file2.js');
+            s.setAttribute('src', '/react-redux/junk/file1a.js?ver=4');
             s.setAttribute('type', 'text/javascript');
             document.head.appendChild(s);
+
+            s = document.createElement('script');
+            s.setAttribute('src', '/react-redux/junk/file1.js?ver=4');
+            s.setAttribute('type', 'text/javascript');
+            document.head.appendChild(s);
+
+            // s = document.createElement('script');
+            // s.setAttribute('src', '/react-redux/junk/file2.js');
+            // s.setAttribute('type', 'text/javascript');
+            // document.head.appendChild(s);
         }, 3000);
 
         if (this.props.subjectsLoaded){
