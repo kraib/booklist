@@ -116,7 +116,9 @@ app.ws('/bookEntryWS', function(ws, req) {
 });
 
 const easyControllers = require('easy-express-controllers').easyControllers;
-easyControllers.createAllControllers(app, { fileTest: f => !/-es6.js$/.test(f) }, {__dirname: './node-dest'});
+//easyControllers.createAllControllers(app);
+easyControllers.createAllControllers(app, {__dirname: './node-dest'});
+easyControllers.createAllControllers(app, {__dirname: './node-dest', controllerPath: 'otherControllers'});
 
 app.get('/', browseToReactRedux);
 app.get('/books', browseToReactRedux);

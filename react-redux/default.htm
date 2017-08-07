@@ -11,6 +11,62 @@
                 window.fetch = unfetch;
             }
         }
+
+        const ajaxUtil = {
+            post(url, data, callback = (resp) => null, errorCallback = (resp) => null){
+                return fetch(url,
+                    {
+                        method: 'post',
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(resp => resp.json())
+                    .then(obj => {
+                        callback(obj);
+                        return obj;
+                    })
+                    .catch(errorCallback);
+            },
+            ['get'](url, data) {
+                let queryString = Object.keys(data).map(p => `${p}=${data[p]}`).join('&');
+                return fetch(`${url}?${queryString}`, { method: 'get', credentials: 'include' }).then(resp => resp.json())
+            }
+        };
+
+        fetch('/product/').then(resp => resp.json).then(resp => console.log(resp));
+        fetch('/product/getProduct?id=12').then(resp => resp.json).then(resp => console.log(resp));
+        
+        fetch('/product/save', 
+            {
+                method: 'post',
+                body: JSON.stringify({id: 12, name: 'new name', price: 9.99})
+            }
+        ).then(resp => resp.json).then(resp => console.log(resp));
+
+        fetch('/admin/settings/getSettings?id=12').then(resp => resp.json).then(resp => console.log(resp));
+
+        fetch('/admin/settings/save', 
+            {
+                method: 'post',
+                body: JSON.stringify({id: 12, newMembershipLevel: 'Gold'})
+            }
+        ).then(resp => resp.json).then(resp => console.log(resp));        
+
+        // fetch('/restproduct/?id=12').then(resp => resp.json).then(resp => console.log(resp));
+
+        // fetch('/restproduct', { method: 'post', body: JSON.stringify({id: 12, name: 'new val', price: 15}) })
+        //     .then(resp => resp.json).then(resp => console.log(resp));
+
+        // fetch('/restproduct', { method: 'put', body: JSON.stringify({id: 12, name: 'new product', price: 9.99}) })
+        //     .then(resp => resp.json).then(resp => console.log(resp));
+
+        // fetch('/restproduct', { method: 'delete', body: JSON.stringify({id: 12}) })
+        //     .then(resp => resp.json).then(resp => console.log(resp));
+
     </script>
 
     <meta charset="UTF-8">
@@ -202,11 +258,7 @@
             return 'wss://' + window.location.host + (path || '');
         }
     </script>
-    
-    <script type="text/javascript" src="/react-redux/util/babelHelpers.min.js"></script>
-    <script type="text/javascript" src="/react-redux/dist/manifest-bundle.js"></script>
-    <script type="text/javascript" src="/react-redux/dist/react-build-bundle.js"></script>
-    <script type="text/javascript" src="/react-redux/dist/main-bundle.js"></script>
+
 
 </body>
 </html>
