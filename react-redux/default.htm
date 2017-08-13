@@ -56,16 +56,16 @@
             }
         ).then(resp => resp.json).then(resp => console.log(resp));        
 
-        // fetch('/restproduct/?id=12').then(resp => resp.json).then(resp => console.log(resp));
+        fetch('/restproduct/?id=12').then(resp => resp.json).then(resp => console.log(resp));
 
-        // fetch('/restproduct', { method: 'post', body: JSON.stringify({id: 12, name: 'new val', price: 15}) })
-        //     .then(resp => resp.json).then(resp => console.log(resp));
+        fetch('/restproduct', { method: 'post', body: JSON.stringify({id: 12, name: 'new val', price: 15}) })
+            .then(resp => resp.json).then(resp => console.log(resp));
 
-        // fetch('/restproduct', { method: 'put', body: JSON.stringify({id: 12, name: 'new product', price: 9.99}) })
-        //     .then(resp => resp.json).then(resp => console.log(resp));
+        fetch('/restproduct', { method: 'put', body: JSON.stringify({id: 12, name: 'new product', price: 9.99}) })
+            .then(resp => resp.json).then(resp => console.log(resp));
 
-        // fetch('/restproduct', { method: 'delete', body: JSON.stringify({id: 12}) })
-        //     .then(resp => resp.json).then(resp => console.log(resp));
+        fetch('/restproduct', { method: 'delete', body: JSON.stringify({id: 12}) })
+            .then(resp => resp.json).then(resp => console.log(resp));
 
     </script>
 

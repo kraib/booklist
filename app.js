@@ -115,10 +115,10 @@ app.ws('/bookEntryWS', function(ws, req) {
     bookEntryQueueManager.subscriberAdded(req.user.id, ws);
 });
 
-const easyControllers = require('easy-express-controllers').easyControllers;
-//easyControllers.createAllControllers(app);
-easyControllers.createAllControllers(app, {__dirname: './node-dest'});
-easyControllers.createAllControllers(app, {__dirname: './node-dest', controllerPath: 'otherControllers'});
+const {createAllControllers} = require('easy-express-controllers');
+
+createAllControllers(app, {__dirname: './node-dest'});
+createAllControllers(app, {__dirname: './node-dest', controllerPath: 'otherControllers'});
 
 app.get('/', browseToReactRedux);
 app.get('/books', browseToReactRedux);
