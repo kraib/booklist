@@ -3,6 +3,8 @@ import thunkMiddleware from "redux-thunk";
 import { applyMiddleware, createStore, combineReducers } from "redux";
 import throttle from "lodash.throttle";
 
+import { request } from "graphql-request";
+
 let asyncReducers = {};
 export function getNewReducer(moduleInfo?, initialState = {}): any {
   if (!moduleInfo) return combineLazyReducers({ app: rootReducer }, initialState);
@@ -84,3 +86,16 @@ if (localStorage) {
   }
   store.subscribe(throttle(saveState, 1000));
 }
+
+let query = `query ($nm: String) {
+  allFoos(filter: {
+    name_contains: $nm
+  }) {
+    id
+    name
+  }
+}`;
+
+request("https://api.graph.cool/simple/v1/cj7p9hzeg0jao017990olfdew", query, { nm: "ar" }).then(resp => {
+  debugger;
+});
