@@ -15,9 +15,7 @@ import mkdirp from "mkdirp";
 import Jimp from "jimp";
 import compression from "compression";
 
-const { graphqlExpress, graphiqlExpress, graphqlHTTP } = require("graphql-server-express");
 const expressGraphql = require("express-graphql");
-console.log(typeof graphqlHTTP);
 const schema = require("./schema");
 
 const hour = 3600000;
