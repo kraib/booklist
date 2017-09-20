@@ -12,8 +12,7 @@
     "build": "npm run react-redux-build",
     "react-redux-build": "cd react-redux && rm -rf dist && set NODE_ENV='production' && webpack -p",
     "start": "node app.js",
-    "heroku-postbuild":
-      "gulp transpile-all && cd react-redux && rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force && npm i && webpack -p"
+    "heroku-postbuild": "gulp transpile-all && cd react-redux && rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force && npm i && webpack -p"
   },
   "dependencies": {
     "@std/esm": "^0.8.3",
@@ -40,6 +39,9 @@
     "express-session": "1.12.1",
     "express-ws": "1.0.0",
     "glob": "7.0.3",
+    "graphql": "^0.11.3",
+    "graphql-server-express": "^1.1.2",
+    "graphql-tools": "^1.2.2",
     "gulp": "3.9.1",
     "gulp-babel": "^7.0.0",
     "gulp-concat": "2.6.0",

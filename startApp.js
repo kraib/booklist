@@ -15,6 +15,9 @@ import mkdirp from "mkdirp";
 import Jimp from "jimp";
 import compression from "compression";
 
+const { graphqlExpress, graphiqlExpress } = require("graphql-server-express");
+const schema = require("./schema");
+
 const hour = 3600000;
 const rememberMeExpiration = 2 * 365 * 24 * hour; //2 years
 
@@ -108,6 +111,14 @@ app.use(passport.authenticate("remember-me"));
 
 import expressWsImport from "express-ws";
 const expressWs = expressWsImport(app);
+
+app.use(
+  "/graphql",
+  bodyParser.json(),
+  graphqlExpress({
+    schema
+  })
+);
 
 app.use("/static/", express.static(__dirname + "/static/"));
 app.use("/node_modules/", express.static(__dirname + "/node_modules/"));
