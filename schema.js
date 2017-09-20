@@ -5,6 +5,7 @@ const typeDefs = `
 type Book {
    _id: String!                # "!" denotes a required field
    title: String
+   publisher: String
 }
 # This type specifies the entry points into our API. In this case
 # there is only one - "books" - which returns a list of books.

@@ -10,8 +10,9 @@ const books = [
 ];
 module.exports = {
   Query: {
-    books(root, args, context) {
-      console.log(root, args, context.user);
+    books(root, args, context, info) {
+      console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
+      //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
       return books;
     }
   }
