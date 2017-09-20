@@ -2,6 +2,7 @@ import rootReducer from "./rootReducer";
 import thunkMiddleware from "redux-thunk";
 import { applyMiddleware, createStore, combineReducers } from "redux";
 import throttle from "lodash.throttle";
+import ajaxUtil from "util/ajaxUtil";
 
 let asyncReducers = {};
 export function getNewReducer(moduleInfo?, initialState = {}): any {
@@ -84,3 +85,8 @@ if (localStorage) {
   }
   store.subscribe(throttle(saveState, 1000));
 }
+
+ajaxUtil.get("/graphql", { query: `{books(title:"aaaa",_id:"12"){_id,title}}` }).then(resp => {
+  console.log(resp);
+  debugger;
+});

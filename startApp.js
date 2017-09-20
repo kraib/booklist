@@ -15,7 +15,9 @@ import mkdirp from "mkdirp";
 import Jimp from "jimp";
 import compression from "compression";
 
-const { graphqlExpress, graphiqlExpress } = require("graphql-server-express");
+const { graphqlExpress, graphiqlExpress, graphqlHTTP } = require("graphql-server-express");
+const expressGraphql = require("express-graphql");
+console.log(typeof graphqlHTTP);
 const schema = require("./schema");
 
 const hour = 3600000;
@@ -112,11 +114,21 @@ app.use(passport.authenticate("remember-me"));
 import expressWsImport from "express-ws";
 const expressWs = expressWsImport(app);
 
+var root = {
+  req: function(args, request) {
+    console.log("in req:", request, "args:", args);
+    return request;
+  }
+};
+
 app.use(
   "/graphql",
-  bodyParser.json(),
-  graphqlExpress({
-    schema
+  graphqlExpress(req => {
+    return {
+      schema,
+      context: req,
+      rootValue: root
+    };
   })
 );
 

@@ -10,8 +10,8 @@ const books = [
 ];
 module.exports = {
   Query: {
-    books(_, args) {
-      console.log(_, args.title);
+    books(root, args, context) {
+      console.log(context.user._id);
       return books;
     }
   }

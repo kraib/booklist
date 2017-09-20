@@ -9,7 +9,7 @@ type Book {
 # This type specifies the entry points into our API. In this case
 # there is only one - "books" - which returns a list of books.
 type Query {
-   books(title: String): [Book]    # "[]" means this is a list of Books
+   books(title: String, _id: String): [Book]    # "[]" means this is a list of Books
 }
 `;
 
