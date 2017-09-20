@@ -123,12 +123,9 @@ var root = {
 
 app.use(
   "/graphql",
-  graphqlExpress(req => {
-    return {
-      schema,
-      context: req,
-      rootValue: root
-    };
+  expressGraphql({
+    schema,
+    graphiql: true
   })
 );
 

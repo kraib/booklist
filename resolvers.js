@@ -11,7 +11,7 @@ const books = [
 module.exports = {
   Query: {
     books(root, args, context) {
-      console.log(context.user._id);
+      console.log(root, args, context.user);
       return books;
     }
   }
