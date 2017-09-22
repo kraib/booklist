@@ -107,8 +107,11 @@ const Books____ = graphql(
 )(BooksRaw);
 
 class BookList extends Component<any, any> {
-  state = { index: 0 };
+  state = { index: 0, show: true };
 
+  componentDidMount() {
+    setInterval(() => this.setState({ show: !this.state.show }), 3000);
+  }
   getState = () => {
     let state = store.getState();
     debugger;
@@ -123,7 +126,7 @@ class BookList extends Component<any, any> {
         <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
         {this.state.index}
         <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
-        <Books />
+        {this.state.show ? <Books /> : null}
       </div>
     );
   }
