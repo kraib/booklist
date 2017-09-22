@@ -67,7 +67,7 @@ const NewBook = graphql(
                 `
               });
 
-              storeData.books[0].title = "Updaaaaated";
+              storeData.books[1].title = "Updaaaaated";
               store.writeQuery({
                 query: gql`
                   query books {
@@ -79,7 +79,7 @@ const NewBook = graphql(
                     }
                   }
                 `,
-                data: storeData
+                data: { books: [] }
               });
               debugger;
               // Read the data from our cache for this query.
