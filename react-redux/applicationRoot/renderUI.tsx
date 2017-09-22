@@ -29,17 +29,72 @@ function ReadBulkRaw({ todoID, mutate }) {
   return <button onClick={() => mutate()}>Complete</button>;
 }
 
-const NewBook = graphql(gql`
-  mutation {
-    newBook {
-      _id
-      title
-      publisher
-      isRead
+const NewBook = graphql(
+  gql`
+    mutation {
+      newBook {
+        _id
+        title
+        publisher
+        isRead
+      }
+    }
+  `,
+  {
+    // options: (props: any) => ({
+    //   variables: {
+    //     index: props.index
+    //   }
+    // })
+    props: ({ ownProps, mutate }) => {
+      return {
+        mutate: X => {
+          return mutate({
+            //variables: { repoFullName, commentContent },
+            update: (store, { data }) => {
+              debugger;
+
+              let storeData: any = store.readQuery({
+                query: gql`
+                  query books {
+                    books {
+                      _id
+                      title
+                      publisher
+                      isRead
+                    }
+                  }
+                `
+              });
+
+              storeData.books[0].title = "Updaaaaated";
+              store.writeQuery({
+                query: gql`
+                  query books {
+                    books {
+                      _id
+                      title
+                      publisher
+                      isRead
+                    }
+                  }
+                `,
+                data: storeData
+              });
+              debugger;
+              // Read the data from our cache for this query.
+              //const data = store.readQuery({ query: CommentAppQuery });
+              // Add our comment from the mutation to the end.
+              //data.comments.push(submitComment);
+              // Write our data back to the cache.
+            }
+          });
+        }
+      };
     }
   }
-`)(NewBookRaw);
-function NewBookRaw({ todoID, mutate }) {
+)(NewBookRaw);
+function NewBookRaw({ mutate }: any) {
   return <button onClick={() => mutate()}>NEW</button>;
 }
 
