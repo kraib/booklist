@@ -17,7 +17,7 @@ const tags = [
   }
 ];
 
-const books = [
+let books = [
   {
     _id: 1,
     title: "Book 1",
@@ -90,6 +90,17 @@ module.exports = {
     newBook() {
       books.push(newBook);
       return newBook;
+    },
+    deleteBook(root, args) {
+      let toDelete = books.find(b => b._id != args._id);
+      books = books.filter(b => b._id != args._id);
+      return toDelete;
+    },
+    junk(root, args) {
+      return {
+        books: [{ ...books[1], title: "JUNK" }],
+        tags: [{ ...tags[1], name: "NEWWWW" }]
+      };
     }
   }
 };

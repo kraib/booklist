@@ -17,6 +17,35 @@ ajaxUtil.get("/graphql", { query: `{books(title:"aaaa",_id:"12"){_id,title}}` })
   //console.log(resp);
 });
 
+const Junk = graphql(gql`
+  mutation {
+    junk {
+      books {
+        _id
+        title
+      }
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`)(JunkRaw);
+function JunkRaw({ todoID, mutate }) {
+  return <button onClick={() => mutate()}>Junk</button>;
+}
+
+const DeleteBook = graphql(gql`
+  mutation {
+    deleteBook(_id: 2) {
+      _id
+    }
+  }
+`)(DeleteBookRaw);
+function DeleteBookRaw({ todoID, mutate }) {
+  return <button onClick={() => mutate()}>Delete</button>;
+}
+
 const ReadBulk = graphql(gql`
   mutation {
     setIsRead(_ids: ["1", "2"]) {
@@ -54,31 +83,36 @@ const NewBook = graphql(
             update: (store, { data }) => {
               debugger;
 
-              let storeData: any = store.readQuery({
-                query: gql`
-                  query books {
-                    books {
-                      _id
-                      title
-                      publisher
-                      isRead
-                    }
+              let q = gql`
+                query books {
+                  books {
+                    _id
+                    title
+                    publisher
+                    isRead
                   }
-                `
+                }
+              `;
+
+              let qIndex = gql`
+                query BookIndex($index: Int!) {
+                  bookIndex(index: $index) {
+                    _id
+                    title
+                    publisher
+                    isRead
+                  }
+                }
+              `;
+
+              let storeData: any = store.readQuery({
+                query: qIndex,
+                variables: { index: 1 }
               });
 
               storeData.books[1].title = "Updaaaaated";
               store.writeQuery({
-                query: gql`
-                  query books {
-                    books {
-                      _id
-                      title
-                      publisher
-                      isRead
-                    }
-                  }
-                `,
+                query: qIndex,
                 data: { books: [] }
               });
               debugger;
@@ -129,7 +163,6 @@ class BooksRaw extends Component<any, any> {
     ) : null;
   }
 }
-
 const Books = graphql(gql`
   query books {
     books {
@@ -141,12 +174,29 @@ const Books = graphql(gql`
   }
 `)(BooksRaw);
 
-const Books____ = graphql(
+class TagsRaw extends Component<any, any> {
+  render() {
+    let { data: { tags, bookIndex, refetch } } = this.props;
+    //debugger;
+
+    return tags && tags.length ? <ul>{tags.map(b => <li key={b._id}>{b.name}</li>)}</ul> : null;
+  }
+}
+const Tags = graphql(gql`
+  query tags {
+    tags {
+      _id
+      name
+    }
+  }
+`)(TagsRaw);
+
+const BooksByIndex = graphql(
   gql`
     query BookIndex($index: Int!) {
-      bookIndexxxx(index: $index) {
-        _idxxx
-        titlexx
+      bookIndex(index: $index) {
+        _id
+        title
         publisher
         isRead
       }
@@ -175,13 +225,22 @@ class BookList extends Component<any, any> {
   render() {
     return (
       <div>
+        <Junk />
+        <br />
+        <br />
+        <DeleteBook />
+        <br />
+        <br />
+        <Tags />
+        <br />
+        <br />
         <NewBook />
         <br />
         <button onClick={this.getState}>State</button>
         <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
         {this.state.index}
         <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
-        {this.state.show ? <Books /> : null}
+        {this.state.show || 1 ? <Books /*index={this.state.index}*/ /> : null}
       </div>
     );
   }

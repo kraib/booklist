@@ -36,9 +36,16 @@ type Query {
    tags: [Tag]
 }
 
+type JunkResult {
+    books: [Book]
+    tags: [Tag]
+}
+
 type Mutation {
     setIsRead(_ids: [String]): [Book]
     newBook: Book
+    deleteBook(_id: Int!): Book
+    junk: JunkResult
 }
 
 `;
