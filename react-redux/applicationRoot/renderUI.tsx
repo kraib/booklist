@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Provider, connect } from "react-redux";
-import { store, apolloClient as client } from "./store";
+import { store } from "./store";
 import { render } from "react-dom";
 
-import { ApolloProvider } from "react-apollo";
-import { ApolloClient, gql, graphql } from "react-apollo";
+export const client = new ApolloClient();
+
+import { ApolloProvider, ApolloClient, gql, graphql } from "react-apollo";
 
 export function clearUI() {
   render(<div />, document.getElementById("home"));
@@ -20,6 +21,20 @@ const ReadBulk = graphql(gql`
 `)(ReadBulkRaw);
 function ReadBulkRaw({ todoID, mutate }) {
   return <button onClick={() => mutate()}>Complete</button>;
+}
+
+const NewBook = graphql(gql`
+  mutation {
+    newBook {
+      _id
+      title
+      publisher
+      isRead
+    }
+  }
+`)(NewBookRaw);
+function NewBookRaw({ todoID, mutate }) {
+  return <button onClick={() => mutate()}>NEW</button>;
 }
 
 class BooksRaw extends Component<any, any> {
@@ -54,23 +69,23 @@ class BooksRaw extends Component<any, any> {
   }
 }
 
-// const Books____ = graphql(gql`
-//   query books {
-//     books {
-//       _id
-//       title
-//       publisher
-//       isRead
-//     }
-//   }
-// `)(BooksRaw);
+const Books = graphql(gql`
+  query books {
+    books {
+      _id
+      title
+      publisher
+      isRead
+    }
+  }
+`)(BooksRaw);
 
-const Books = graphql(
+const Books____ = graphql(
   gql`
     query BookIndex($index: Int!) {
-      bookIndex(index: $index) {
-        _id
-        title
+      bookIndexxxx(index: $index) {
+        _idxxx
+        titlexx
         publisher
         isRead
       }
@@ -96,11 +111,13 @@ class BookList extends Component<any, any> {
   render() {
     return (
       <div>
+        <NewBook />
+        <br />
         <button onClick={this.getState}>State</button>
         <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
         {this.state.index}
         <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
-        <Books index={this.state.index} />
+        <Books />
       </div>
     );
   }
@@ -108,7 +125,7 @@ class BookList extends Component<any, any> {
 
 export function renderUI(component) {
   render(
-    <ApolloProvider client={client} store={store}>
+    <ApolloProvider client={client}>
       <BookList />
     </ApolloProvider>,
     document.getElementById("home")

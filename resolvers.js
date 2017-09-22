@@ -38,6 +38,13 @@ const books = [
   }
 ];
 
+const newBook = {
+  _id: 4,
+  title: "Book 4",
+  publisher: "Publisher C",
+  isRead: false
+};
+
 const authors = [
   {
     _id: "1",
@@ -79,6 +86,35 @@ module.exports = {
         book.isRead = true;
       });
       return books;
+    },
+    newBook() {
+      books.push(newBook);
+      return newBook;
     }
   }
 };
+
+let Schema = `
+
+  type Tag {
+    _id
+    name
+  }
+
+  type Todo {
+    _id: Int!
+    tags: [Int]  #Int - not Tag
+  }
+`;
+
+/*
+  So Todo's are stored with an array if tag ID's (in Mongo, say). With Redux, I'd initially just load up all Tags, 
+  and then as Todo's came in, I'd just match up each tag int Id, with the right Tag object from my reducer. Normalizing
+  my redux data made this trivial.
+  
+  What's the GraphQL way?  I **don't** want N + 1 queries.  I assume I'm missing something fundamental here - I want to tell 
+  Apollo that each id in the tags array if a FK to the list of Tags it already brought down.  Is there a way to specify that?
+
+  As near as I can tell, from what I've been playing with, if I nest these relationships in my GQL schema, then my resolver will
+  be responsible for fetching the data as needed (N + 1 queries)
+*/

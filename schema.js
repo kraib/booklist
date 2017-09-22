@@ -38,6 +38,7 @@ type Query {
 
 type Mutation {
     setIsRead(_ids: [String]): [Book]
+    newBook: Book
 }
 
 `;

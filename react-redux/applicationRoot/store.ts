@@ -4,12 +4,11 @@ import { applyMiddleware, createStore, combineReducers } from "redux";
 import throttle from "lodash.throttle";
 import ajaxUtil from "util/ajaxUtil";
 
-import { ApolloClient, gql, graphql } from "react-apollo";
-export const apolloClient = new ApolloClient();
+import { graphql } from "react-apollo";
 
 let asyncReducers = {};
 export function getNewReducer(moduleInfo?, initialState = {}): any {
-  if (!moduleInfo) return combineLazyReducers({ app: rootReducer, apollo: apolloClient.reducer() }, initialState);
+  if (!moduleInfo) return combineLazyReducers({ app: rootReducer }, initialState);
 
   if (asyncReducers[`${moduleInfo.name}Module`]) return; //registering an async reducer we already have - do nothing and get out
 
@@ -19,7 +18,6 @@ export function getNewReducer(moduleInfo?, initialState = {}): any {
     combineLazyReducers(
       {
         app: rootReducer,
-        apollo: apolloClient.reducer(),
         ...asyncReducers
       },
       store.getState()
