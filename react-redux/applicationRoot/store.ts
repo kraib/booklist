@@ -4,9 +4,12 @@ import { applyMiddleware, createStore, combineReducers } from "redux";
 import throttle from "lodash.throttle";
 import ajaxUtil from "util/ajaxUtil";
 
+import { ApolloClient, gql, graphql } from "react-apollo";
+export const apolloClient = new ApolloClient();
+
 let asyncReducers = {};
 export function getNewReducer(moduleInfo?, initialState = {}): any {
-  if (!moduleInfo) return combineLazyReducers({ app: rootReducer }, initialState);
+  if (!moduleInfo) return combineLazyReducers({ app: rootReducer, apollo: apolloClient.reducer() }, initialState);
 
   if (asyncReducers[`${moduleInfo.name}Module`]) return; //registering an async reducer we already have - do nothing and get out
 
@@ -16,6 +19,7 @@ export function getNewReducer(moduleInfo?, initialState = {}): any {
     combineLazyReducers(
       {
         app: rootReducer,
+        apollo: apolloClient.reducer(),
         ...asyncReducers
       },
       store.getState()
@@ -87,6 +91,5 @@ if (localStorage) {
 }
 
 ajaxUtil.get("/graphql", { query: `{books(title:"aaaa",_id:"12"){_id,title}}` }).then(resp => {
-  console.log(resp);
-  debugger;
+  //console.log(resp);
 });

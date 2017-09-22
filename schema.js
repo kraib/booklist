@@ -3,6 +3,11 @@ const { makeExecutableSchema, addMockFunctionsToSchema } = require("graphql-tool
 
 const typeDefs = `
 
+type Tag {
+    _id: String!
+    name: String
+}
+
 type Author {
     _id: String!
     name: String
@@ -18,6 +23,7 @@ type Book {
    _id: String!
    title: String
    publisher: String
+   isRead: Boolean
    author(first: Int): Author
 }
 
@@ -25,8 +31,15 @@ type Book {
 # there is only one - "books" - which returns a list of books.
 type Query {
    books(title: String, _id: String): [Book]    
+   bookIndex(index: Int): [Book]
    authors(name: String, _id: String): [Author]
+   tags: [Tag]
 }
+
+type Mutation {
+    setIsRead(_ids: [String]): [Book]
+}
+
 `;
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });

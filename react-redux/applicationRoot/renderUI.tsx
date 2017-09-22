@@ -1,46 +1,116 @@
-import React from "react";
+import React, { Component } from "react";
 import { Provider, connect } from "react-redux";
-import Header from "./components/header";
-import { store } from "./store";
+import { store, apolloClient as client } from "./store";
 import { render } from "react-dom";
-import { requestDesktop, requestMobile } from "./rootReducerActionCreators";
-import MainNavigationBar from "applicationRoot/components/mainNavigation";
 
-const MobileMeta = connect(state => state.app, {})(app => (
-  <meta
-    name="viewport"
-    content={app.showingMobile ? "width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0; user-scalable=0;" : ""}
-  />
-));
-
-const WellUiSwitcher = connect(state => state.app, { requestDesktop, requestMobile })(props => {
-  let showChooseDesktop = props.isMobile && props.showingMobile,
-    showSwitchBackMobile = props.isMobile && props.showingDesktop;
-
-  return (
-    <div className="well well-sm" style={{ position: "fixed", bottom: 0, left: 0, right: 0, marginBottom: 0 }}>
-      <img width="16" height="16" src="/react-redux/static/main-icon2.png" />
-      <span style={{ marginLeft: "5px", marginRight: "5px" }}>My Library</span>
-      {showChooseDesktop ? <a onClick={props.requestDesktop}>Use desktop version</a> : null}
-      {showSwitchBackMobile ? <a onClick={props.requestMobile}>Use mobile version</a> : null}
-    </div>
-  );
-});
+import { ApolloProvider } from "react-apollo";
+import { ApolloClient, gql, graphql } from "react-apollo";
 
 export function clearUI() {
   render(<div />, document.getElementById("home"));
 }
 
+const ReadBulk = graphql(gql`
+  mutation {
+    setIsRead(_ids: ["1", "2"]) {
+      _id
+      isRead
+    }
+  }
+`)(ReadBulkRaw);
+function ReadBulkRaw({ todoID, mutate }) {
+  return <button onClick={() => mutate()}>Complete</button>;
+}
+
+class BooksRaw extends Component<any, any> {
+  render() {
+    let { data: { books, bookIndex, refetch } } = this.props;
+    //debugger;
+    if (bookIndex) {
+      books = bookIndex;
+    }
+
+    return books && books.length ? (
+      <div>
+        <ReadBulk />
+        <br />
+        <br />
+
+        <table>
+          <tbody>
+            {books.map(b => (
+              <tr key={b._id}>
+                <td>{b._id}</td>
+                <td>{b.title}</td>
+                <td>{b.isRead ? "True" : "False"}</td>
+                <td>{b.publisher}</td>
+                <td>{b.isRead}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : null;
+  }
+}
+
+// const Books____ = graphql(gql`
+//   query books {
+//     books {
+//       _id
+//       title
+//       publisher
+//       isRead
+//     }
+//   }
+// `)(BooksRaw);
+
+const Books = graphql(
+  gql`
+    query BookIndex($index: Int!) {
+      bookIndex(index: $index) {
+        _id
+        title
+        publisher
+        isRead
+      }
+    }
+  `,
+  {
+    options: (props: any) => ({
+      variables: {
+        index: props.index
+      }
+    })
+  }
+)(BooksRaw);
+
+class BookList extends Component<any, any> {
+  state = { index: 0 };
+
+  getState = () => {
+    let state = store.getState();
+    debugger;
+  };
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.getState}>State</button>
+        <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
+        {this.state.index}
+        <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
+        <Books index={this.state.index} />
+      </div>
+    );
+  }
+}
+
 export function renderUI(component) {
   render(
-    <Provider store={store as any}>
-      <div>
-        <MobileMeta />
-        <MainNavigationBar />
-        <div style={{ marginTop: 60 }}>{component}</div>
-        <WellUiSwitcher />
-      </div>
-    </Provider>,
+    <ApolloProvider client={client} store={store}>
+      <BookList />
+    </ApolloProvider>,
     document.getElementById("home")
   );
 }

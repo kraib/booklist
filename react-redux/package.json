@@ -38,6 +38,7 @@
     "query-string": "4.3.2",
     "react": "15.5.4",
     "react-addons-css-transition-group": "15.1.0",
+    "react-apollo": "^1.4.15",
     "react-autosuggest": "3.7.4",
     "react-collapse": "4.0.2",
     "react-dnd": "2.4.0",
