@@ -4,8 +4,6 @@ import { applyMiddleware, createStore, combineReducers } from "redux";
 import throttle from "lodash.throttle";
 import ajaxUtil from "util/ajaxUtil";
 
-import { graphql } from "react-apollo";
-
 let asyncReducers = {};
 export function getNewReducer(moduleInfo?, initialState = {}): any {
   if (!moduleInfo) return combineLazyReducers({ app: rootReducer }, initialState);

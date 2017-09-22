@@ -3,13 +3,19 @@ import { Provider, connect } from "react-redux";
 import { store } from "./store";
 import { render } from "react-dom";
 
+import { ApolloProvider, ApolloClient, gql, graphql } from "react-apollo";
+
 export const client = new ApolloClient();
 
-import { ApolloProvider, ApolloClient, gql, graphql } from "react-apollo";
+import ajaxUtil from "util/ajaxUtil";
 
 export function clearUI() {
   render(<div />, document.getElementById("home"));
 }
+
+ajaxUtil.get("/graphql", { query: `{books(title:"aaaa",_id:"12"){_id,title}}` }).then(resp => {
+  //console.log(resp);
+});
 
 const ReadBulk = graphql(gql`
   mutation {
