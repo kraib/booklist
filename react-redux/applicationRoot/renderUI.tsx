@@ -3,7 +3,7 @@ import { Provider, connect } from "react-redux";
 import { store } from "./store";
 import { render } from "react-dom";
 
-import { ApolloProvider, ApolloClient, gql, graphql } from "react-apollo";
+import { ApolloProvider, ApolloClient, gql, graphql, withApollo } from "react-apollo";
 
 export const client = new ApolloClient();
 
@@ -133,6 +133,17 @@ function NewBookRaw({ mutate }: any) {
 }
 
 class BooksRaw extends Component<any, any> {
+  refetch = () => {
+    this.props.data.refetch();
+  };
+  componentDidUpdate(prevProps, prevState) {
+    let { data: { bookIndex } } = this.props;
+    let { data: { bookIndex: prevBookIndex } } = prevProps;
+
+    if (bookIndex !== prevBookIndex) {
+      this.props.client.query({ query: bookQuery, variables: { index: this.props.index + 1 } });
+    }
+  }
   render() {
     let { data: { books, bookIndex, refetch } } = this.props;
     //debugger;
@@ -145,6 +156,7 @@ class BooksRaw extends Component<any, any> {
         <ReadBulk />
         <br />
         <br />
+        <button onClick={this.refetch}>Re-fetch</button>
 
         <table>
           <tbody>
@@ -191,25 +203,34 @@ const Tags = graphql(gql`
   }
 `)(TagsRaw);
 
-const BooksByIndex = graphql(
-  gql`
-    query BookIndex($index: Int!) {
-      bookIndex(index: $index) {
-        _id
-        title
-        publisher
-        isRead
-      }
+const bookQuery = gql`
+  query BookIndex($index: Int!) {
+    bookIndex(index: $index) {
+      _id
+      title
+      publisher
+      isRead
     }
-  `,
-  {
+  }
+`;
+
+const BooksByIndex = withApollo(
+  graphql(bookQuery, {
     options: (props: any) => ({
       variables: {
         index: props.index
+      },
+
+      /* HERE -> */
+      onNewData: (props, { data: newData, client }) => {
+        if (newData.bookIndex && newData.bookIndex.length === props.pageSize) {
+          //there may be a next page - fetch it
+          client.query({ query: bookQuery, variables: { index: props.index + 1 } });
+        }
       }
     })
-  }
-)(BooksRaw);
+  })(BooksRaw)
+);
 
 class BookList extends Component<any, any> {
   state = { index: 0, show: true };
@@ -240,7 +261,8 @@ class BookList extends Component<any, any> {
         <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
         {this.state.index}
         <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
-        {this.state.show || 1 ? <Books /*index={this.state.index}*/ /> : null}
+        {0 ? <Books /*index={this.state.index}*/ /> : null}
+        {1 ? <BooksByIndex index={this.state.index} /> : null}
       </div>
     );
   }
