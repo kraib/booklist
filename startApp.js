@@ -15,15 +15,16 @@ import mkdirp from "mkdirp";
 import Jimp from "jimp";
 import compression from "compression";
 
-const graphql = require("graphql");
+import { graphql } from "graphql";
 const expressGraphql = require("express-graphql");
 const schema = require("./schema");
 
-//console.log("Running");
+console.log("Running");
 
-// graphql(schema, "{books{ _id, title }}").then(resp => {
-//   debugger;
-// });
+debugger;
+graphql(schema, "{books{ _id, title }}").then(resp => {
+  debugger;
+});
 
 const hour = 3600000;
 const rememberMeExpiration = 2 * 365 * 24 * hour; //2 years
