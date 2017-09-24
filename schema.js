@@ -24,7 +24,7 @@ type Book {
    title: String
    publisher: String
    isRead: Boolean
-   author(first: Int): Author
+   authors: [Author]
 }
 
 # This type specifies the entry points into our API. In this case

@@ -56,12 +56,20 @@ const authors = [
   }
 ];
 module.exports = {
+  Book: {
+    authors(book) {
+      console.log("Authors from Book Type resolver", book.title);
+      //console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
+      //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
+      return authors;
+    }
+  },
   Query: {
     books(root, args, context, info) {
       console.log("BOOKS");
       //console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
       //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
-      return books;
+      return Promise.resolve(books);
     },
     bookIndex(root, args) {
       console.log("BOOK INDEX");
