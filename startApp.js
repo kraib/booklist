@@ -21,10 +21,8 @@ const schema = require("./schema");
 
 console.log("Running");
 
-debugger;
-graphql(schema, "{books{ _id, title }}").then(resp => {
-  debugger;
-});
+// graphql(schema, "{books{ _id, title }}").then(resp => {
+// });
 
 const hour = 3600000;
 const rememberMeExpiration = 2 * 365 * 24 * hour; //2 years
@@ -120,11 +118,14 @@ app.use(passport.authenticate("remember-me"));
 import expressWsImport from "express-ws";
 const expressWs = expressWsImport(app);
 
+var db = () => ({ value: "database" });
+
 var root = {
   req: function(args, request) {
     console.log("in req:", request, "args:", args);
     return request;
-  }
+  },
+  db: db
 };
 
 let s = schema;
@@ -134,7 +135,8 @@ app.use(
   "/graphql",
   expressGraphql({
     schema,
-    graphiql: true
+    graphiql: true,
+    rootValue: root
   })
 );
 

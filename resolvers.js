@@ -66,7 +66,9 @@ module.exports = {
   },
   Query: {
     books(root, args, context, info) {
-      console.log("BOOKS");
+      console.log("BOOKSSSS");
+      console.log(typeof root);
+      console.log(typeof root.db);
       //console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
       //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
       return Promise.resolve(books);
