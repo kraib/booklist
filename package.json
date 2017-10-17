@@ -17,6 +17,8 @@
   "dependencies": {
     "@std/esm": "^0.8.3",
     "apac": "3.0.2",
+    "apollo-link": "^0.8.0",
+    "apollo-link-http": "^0.8.0",
     "aws-sdk": "2.3.14",
     "babel-core": "^6.26.0",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",

@@ -4,8 +4,30 @@ import { store } from "./store";
 import { render } from "react-dom";
 
 import { ApolloProvider, ApolloClient, gql, graphql, withApollo } from "react-apollo";
-
 export const client = new ApolloClient();
+
+const ApolloClientAny: any = ApolloClient;
+import { HttpLink, createHttpLink } from "apollo-link-http";
+
+export const client2 = new ApolloClientAny({
+  link: createHttpLink({ fetchOptions: { method: "get" } } as any)
+});
+
+let title = null;
+client2
+  .query({
+    query: gql`
+      query GetMyBooks($title: String) {
+        books2(title: $title) {
+          title
+        }
+      }
+    `,
+    variables: {}
+  })
+  .then(res => {
+    debugger;
+  });
 
 import ajaxUtil from "util/ajaxUtil";
 
@@ -151,28 +173,30 @@ class BooksRaw extends Component<any, any> {
       books = bookIndex;
     }
 
-    return books && books.length ? (
-      <div>
-        <ReadBulk />
-        <br />
-        <br />
-        <button onClick={this.refetch}>Re-fetch</button>
+    return null;
 
-        <table>
-          <tbody>
-            {books.map(b => (
-              <tr key={b._id}>
-                <td>{b._id}</td>
-                <td>{b.title}</td>
-                <td>{b.isRead ? "True" : "False"}</td>
-                <td>{b.publisher}</td>
-                <td>{b.isRead}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ) : null;
+    // return books && books.length ? (
+    //   <div>
+    //     <ReadBulk />
+    //     <br />
+    //     <br />
+    //     <button onClick={this.refetch}>Re-fetch</button>
+
+    //     <table>
+    //       <tbody>
+    //         {books.map(b => (
+    //           <tr key={b._id}>
+    //             <td>{b._id}</td>
+    //             <td>{b.title}</td>
+    //             <td>{b.isRead ? "True" : "False"}</td>
+    //             <td>{b.publisher}</td>
+    //             <td>{b.isRead}</td>
+    //           </tr>
+    //         ))}
+    //       </tbody>
+    //     </table>
+    //   </div>
+    // ) : null;
   }
 }
 const Books = graphql(gql`
@@ -244,27 +268,28 @@ class BookList extends Component<any, any> {
   };
 
   render() {
-    return (
-      <div>
-        <Junk />
-        <br />
-        <br />
-        <DeleteBook />
-        <br />
-        <br />
-        <Tags />
-        <br />
-        <br />
-        <NewBook />
-        <br />
-        <button onClick={this.getState}>State</button>
-        <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
-        {this.state.index}
-        <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
-        {0 ? <Books /*index={this.state.index}*/ /> : null}
-        {1 ? <BooksByIndex index={this.state.index} /> : null}
-      </div>
-    );
+    return null;
+    // return (
+    //   <div>
+    //     <Junk />
+    //     <br />
+    //     <br />
+    //     <DeleteBook />
+    //     <br />
+    //     <br />
+    //     <Tags />
+    //     <br />
+    //     <br />
+    //     <NewBook />
+    //     <br />
+    //     <button onClick={this.getState}>State</button>
+    //     <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
+    //     {this.state.index}
+    //     <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
+    //     {0 ? <Books /*index={this.state.index}*/ /> : null}
+    //     {1 ? <BooksByIndex index={this.state.index} /> : null}
+    //   </div>
+    // );
   }
 }
 

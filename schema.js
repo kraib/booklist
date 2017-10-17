@@ -31,6 +31,7 @@ type Book {
 # there is only one - "books" - which returns a list of books.
 type Query {
    books(title: String, _id: String): [Book]    
+   books2(title: String, _id: String): [Book]    
    bookIndex(index: Int): [Book]
    authors(name: String, _id: String): [Author]
    tags: [Tag]

@@ -66,15 +66,20 @@ module.exports = {
   },
   Query: {
     books(root, args, context, info) {
-      console.log("BOOKSSSS");
-      console.log(typeof root);
-      console.log(typeof root.db);
+      //console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
+      //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
+      return Promise.resolve(books);
+    },
+    books2(root, args, context, info) {
+      console.log("keys", Object.keys(args).join(","));
+      console.log("title = ", args.title);
+
       //console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
       //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
       return Promise.resolve(books);
     },
     bookIndex(root, args) {
-      console.log("BOOK INDEX");
+      //console.log("BOOK INDEX");
       let index = args.index;
       return [books[index]];
     },
