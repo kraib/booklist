@@ -3,14 +3,16 @@ import { Provider, connect } from "react-redux";
 import { store } from "./store";
 import { render } from "react-dom";
 
-import { ApolloProvider, ApolloClient, gql, graphql, withApollo } from "react-apollo";
+import { ApolloProvider, ApolloClient as RClient, gql, graphql, withApollo } from "react-apollo";
+import { ApolloClient } from "apollo-client";
 export const client = new ApolloClient();
 
 const ApolloClientAny: any = ApolloClient;
+
 import { HttpLink, createHttpLink } from "apollo-link-http";
 
 export const client2 = new ApolloClientAny({
-  link: createHttpLink({ fetchOptions: { method: "get" } } as any)
+  link: createHttpLink({ fetcherOptions: { method: "get" } })
 });
 
 let title = null;
