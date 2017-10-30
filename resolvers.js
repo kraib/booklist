@@ -71,7 +71,9 @@ module.exports = {
       console.log(typeof root.db);
       //console.log(info.fieldNodes.find(fn => fn.kind == "Field").selectionSet.selections.map(selection => selection.name.value));
       //console.log(info.operation.selectionSet.selections.map(selection => selection.name.value));
-      return Promise.resolve(books);
+      return Promise.resolve(books).then(books => ({
+        BookResults: books
+      }));
     },
     bookIndex(root, args) {
       console.log("BOOK INDEX");

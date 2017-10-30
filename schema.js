@@ -27,10 +27,14 @@ type Book {
    authors: [Author]
 }
 
+type BooksQueryResult {
+    BookResults: [Book]
+}
+
 # This type specifies the entry points into our API. In this case
 # there is only one - "books" - which returns a list of books.
 type Query {
-   books(title: String, _id: String): [Book]    
+   books(title: String, _id: String): BooksQueryResult    
    bookIndex(index: Int): [Book]
    authors(name: String, _id: String): [Author]
    tags: [Tag]

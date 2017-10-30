@@ -13,9 +13,9 @@ export function clearUI() {
   render(<div />, document.getElementById("home"));
 }
 
-ajaxUtil.get("/graphql", { query: `{books(title:"aaaa",_id:"12"){_id,title}}` }).then(resp => {
-  //console.log(resp);
-});
+// ajaxUtil.get("/graphql", { query: `{books(title:"aaaa",_id:"12"){_id,title}}` }).then(resp => {
+//   //console.log(resp);
+// });
 
 const Junk = graphql(gql`
   mutation {
@@ -145,10 +145,13 @@ class BooksRaw extends Component<any, any> {
     }
   }
   render() {
-    let { data: { books, bookIndex, refetch } } = this.props;
-    //debugger;
+    let { data, data: { books, bookIndex, BookResults, refetch } } = this.props;
     if (bookIndex) {
       books = bookIndex;
+    }
+    debugger;
+    if (books && books.BookResults) {
+      books = books.BookResults;
     }
 
     return books && books.length ? (
@@ -178,10 +181,12 @@ class BooksRaw extends Component<any, any> {
 const Books = graphql(gql`
   query books {
     books {
-      _id
-      title
-      publisher
-      isRead
+      BookResults {
+        _id
+        title
+        publisher
+        isRead
+      }
     }
   }
 `)(BooksRaw);
@@ -261,8 +266,8 @@ class BookList extends Component<any, any> {
         <button onClick={() => this.setState({ index: this.state.index - 1 })}>Prev</button>
         {this.state.index}
         <button onClick={() => this.setState({ index: this.state.index + 1 })}>Next</button>
-        {0 ? <Books /*index={this.state.index}*/ /> : null}
-        {1 ? <BooksByIndex index={this.state.index} /> : null}
+        {1 ? <Books /*index={this.state.index}*/ /> : null}
+        {0 ? <BooksByIndex index={this.state.index} /> : null}
       </div>
     );
   }
