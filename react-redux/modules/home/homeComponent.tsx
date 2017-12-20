@@ -3,7 +3,6 @@ import { findDOMNode, render } from "react-dom";
 import { connect } from "react-redux";
 import { isLoggedIn } from "reactStartup";
 import ajaxUtil from "util/ajaxUtil";
-
 import "d3-transition";
 
 import { loadSubjects } from "applicationRoot/rootReducerActionCreators";
@@ -18,6 +17,20 @@ import {
 import BarChart from "./components/barChart";
 import Bar from "./components/bar";
 import Axis from "./components/axis";
+
+import { css } from "emotion";
+
+let redDiv = css`
+  background-color: red;
+
+  a {
+    font-style: italic;
+  }
+
+  nav & span {
+    color: white;
+  }
+`;
 
 const MainHomePane = props => (
   <div style={{ margin: 0 }}>
@@ -66,6 +79,24 @@ class HomeIfLoggedIn extends Component<any, any> {
     return (
       <div>
         <MainHomePane>
+          <nav>
+            <div className={redDiv}>
+              This is red <a>italics text</a>
+              <span>white text</span>
+            </div>
+          </nav>
+          <div className={redDiv}>
+            This is red <a>italics text</a>
+            <span>NOT white text</span>
+          </div>
+          <nav>
+            <div>
+              This is NOT red <a>NON italics text</a> <span>not white</span>
+            </div>
+          </nav>
+          <br />
+          <br />
+          <br />
           Welcome to <i>My Library</i>. Below is the beginnings of a data visualization of your library. More to come!
           <hr />
           {subjectsLoaded
