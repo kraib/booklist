@@ -6,6 +6,8 @@ var path = require("path");
 var webpack = require("webpack");
 var isProduction = process.env.NODE_ENV === "production" || process.argv.some(arg => arg.indexOf("webpack-dev-server") >= 0);
 
+isProduction = true;
+
 const asyncBundle = (name, { nodePaths = [], resources = [] }) =>
   new webpack.optimize.CommonsChunkPlugin({
     name: "main",
@@ -66,7 +68,12 @@ module.exports = {
             loader: "babel-loader",
             options: {
               presets: ["react"],
-              plugins: ["transform-decorators-legacy", "transform-class-properties", "transform-object-rest-spread"]
+              plugins: [
+                ["emotion", { sourceMap: false, hoist: true, autoLabel: true }],
+                "transform-decorators-legacy",
+                "transform-class-properties",
+                "transform-object-rest-spread"
+              ]
             }
           },
           "ts-loader"

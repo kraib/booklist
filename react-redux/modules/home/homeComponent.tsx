@@ -19,6 +19,19 @@ import Bar from "./components/bar";
 import Axis from "./components/axis";
 
 import { css } from "emotion";
+import styled from "react-emotion";
+
+let StyledDiv = styled.div`
+  background-color: red;
+
+  a {
+    font-style: italic;
+  }
+
+  nav & span {
+    color: white;
+  }
+`;
 
 let redDiv = css`
   background-color: red;
@@ -94,6 +107,18 @@ class HomeIfLoggedIn extends Component<any, any> {
               This is NOT red <a>NON italics text</a> <span>not white</span>
             </div>
           </nav>
+          <br />
+          <br />
+          <nav>
+            <StyledDiv>
+              This is red <a>italics text</a>
+              <span>white text</span>
+            </StyledDiv>
+          </nav>
+          <StyledDiv>
+            This is red <a>italics text</a>
+            <span>NOT white text</span>
+          </StyledDiv>
           <br />
           <br />
           <br />
