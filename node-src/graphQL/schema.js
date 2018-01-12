@@ -1,6 +1,21 @@
-import { query as BookQuery, mutation as BookMutation, type as BookType } from './Book/schema';
-    
+import { query as BookQuery, mutation as BookMutation, type as BookType } from "./Book/schema";
+
 export default `
+
+  type Person {
+    name: String,
+    age: Int,
+    addressIds: [Int],
+    addresses: [Address]
+  }
+
+  type Address {
+    _id: Int,
+    streetAddress: String
+    City: String,
+    State: String,
+    Zip: String
+  }
 
   type QueryResultsMetadata {
     count: Int
@@ -25,10 +40,12 @@ export default `
 
   type Query {
     ${BookQuery}
+
+    allPeople: [Person]
   }
 
   type Mutation {
     ${BookMutation}
   }
 
-`
+`;
