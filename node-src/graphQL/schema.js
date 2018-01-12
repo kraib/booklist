@@ -12,9 +12,9 @@ export default `
   type Address {
     _id: Int,
     streetAddress: String
-    City: String,
-    State: String,
-    Zip: String
+    city: String,
+    state: String,
+    zip: String
   }
 
   type QueryResultsMetadata {
@@ -39,13 +39,7 @@ export default `
   ${BookType}
 
   type Query {
-    ${BookQuery}
-
     allPeople: [Person]
-  }
-
-  type Mutation {
-    ${BookMutation}
   }
 
 `;

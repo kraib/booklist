@@ -52,19 +52,22 @@ setTimeout(() => {
 
 export default {
   Person: {
-    async addresses(root, args, context, ast, x, y, z) {
+    async addresses(person, args, context, ast) {
+      // -------------^
+      // the actual person object for which you need
+      // to load the addresses
+
+      // fetch the addresses from your database
       return [];
     }
   },
-  Query: Object.assign({}, BookQuery, {
-    async allPeople(root, args, context, ast, x, y, z) {
+  Query: {
+    async allPeople(root, args, context, ast) {
       return [
         { name: "Adam", age: 35, addressIds: [1, 2, 3] },
         { name: "Bob", age: 25, addressIds: [4] },
         { name: "Laura", age: 35, addressIds: [1, 3] }
       ];
     }
-  }),
-  Mutation: Object.assign({}, BookMutation),
-  ...BookRest
+  }
 };
