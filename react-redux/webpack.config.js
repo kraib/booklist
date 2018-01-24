@@ -6,6 +6,8 @@ var path = require("path");
 var webpack = require("webpack");
 var isProduction = process.env.NODE_ENV === "production" || process.argv.some(arg => arg.indexOf("webpack-dev-server") >= 0);
 
+isProduction = false;
+
 const asyncBundle = (name, { nodePaths = [], resources = [] }) =>
   new webpack.optimize.CommonsChunkPlugin({
     name: "main",
@@ -84,7 +86,7 @@ module.exports = {
     ]
   },
   plugins: [
-    //new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+    //new BundleAnalyzerPlugin({ analyzerMode: "static" }),
     isProduction ? new UglifyJsPlugin({ uglifyOptions: { ie8: false, ecma: 8 } }) : null,
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development")

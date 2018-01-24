@@ -23,6 +23,15 @@ import { selectBookSearchUiView, bookSearchUiViewType } from "../reducers/bookSe
 
 import ComponentLoading from "applicationRoot/components/componentLoading";
 
+import { Provider, Connect, Client, query, mutation } from "urql";
+
+const client = new Client({
+  url: "http://localhost:3000/graphql",
+  fetchOptions: {
+    credentials: "include"
+  }
+});
+
 const ManualBookEntry = Loadable({
   loader: () => System.import(/* webpackChunkName: "manual-book-entry-modal" */ "applicationRoot/components/manualBookEntry"),
   loading: ComponentLoading,
@@ -106,7 +115,8 @@ export default class BookViewingList extends Component<mainSelectorType & action
     booksTagModifying: null,
     isEditingBook: false,
     editingBookSaving: false,
-    editingBook: null
+    editingBook: null,
+    page: 1
   };
   editTags = () => this.setState({ tagEditModalOpen: true });
   stopEditingTags = () => this.setState({ tagEditModalOpen: false });
@@ -165,7 +175,60 @@ export default class BookViewingList extends Component<mainSelectorType & action
               </div>
             ) : null}
 
-            {this.props.subjectsLoaded && this.props.tagsLoaded ? (
+            {1 ? (
+              <Provider client={client}>
+                <Connect
+                  query={query(
+                    `
+                  query ($page: Int) {
+                    allBooks(PAGE: $page, PAGE_SIZE: 5){
+                      Books {
+                        _id
+                        title
+                      }
+                    }
+                  }
+                `,
+                    { page: this.state.page }
+                  )}
+                  render={({ loaded, fetching, data }) =>
+                    fetching ? (
+                      <div>Fetching, yo</div>
+                    ) : loaded && data ? (
+                      <div>
+                        <button onClick={() => this.setState({ page: this.state.page - 1 })}>Prev</button>
+                        <button onClick={() => this.setState({ page: this.state.page + 1 })}>Next</button>
+                        <ul>{data.allBooks.Books.map(book => <li>{book.title}</li>)}</ul>
+                      </div>
+                    ) : null
+                  }
+                />
+              </Provider>
+            ) : null}
+
+            {0 ? (
+              <Provider client={client}>
+                <Connect
+                  query={query(
+                    `
+                  query {
+                    allBooksSimple{
+                        _id,
+                        title
+                    }
+                  }
+                `
+                  )}
+                  render={({ loaded, fetching, refetch, data, error, addTodo }) => {
+                    debugger;
+                    return <div>YOOOO</div>;
+                  }}
+                />{" "}
+                <div>Hello</div>
+              </Provider>
+            ) : null}
+
+            {0 && this.props.subjectsLoaded && this.props.tagsLoaded ? (
               this.props.isGridView ? (
                 <GridView
                   editBook={this.editBook}
