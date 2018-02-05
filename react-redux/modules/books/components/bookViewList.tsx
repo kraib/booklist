@@ -47,7 +47,7 @@ const client = new Client({
       page: props.page
     }
   }),
-  { shouldQueryUpdate: ({ props }) => props.page % 2 }
+  { mapProps: props => ({ newProps: props }), shouldQueryUpdate: ({ props }) => props.page % 2 }
 )
 @mutation(
   client,
@@ -55,7 +55,8 @@ const client = new Client({
     updateBook(_id: $_id, Updates: { title: $title }) {
       success
     }
-  }`
+  }`,
+  { mapProps: props => ({ newMutationProps: props }) }
 )
 class MutationAndQuery extends Component<any, any> {
   state = { editingId: "", editingOriginaltitle: "" };
@@ -64,7 +65,9 @@ class MutationAndQuery extends Component<any, any> {
     this.setState({ editingId: book._id, editingOriginaltitle: book.title });
   };
   render() {
-    let { loading, loaded, data, reload, running, finished, runMutation, page } = this.props;
+    let { loading, loaded, data, reload } = this.props.newProps;
+    let { running, finished, runMutation } = this.props.newMutationProps;
+    let { page } = this.props;
     let { editingId, editingOriginaltitle } = this.state;
     return (
       <div>
