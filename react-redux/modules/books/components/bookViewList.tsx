@@ -23,7 +23,7 @@ import { selectBookSearchUiView, bookSearchUiViewType } from "../reducers/bookSe
 
 import ComponentLoading from "applicationRoot/components/componentLoading";
 
-import { Client, query, mutation } from "micro-graphql-react";
+import { Client, query, mutation, setDefaultClient } from "micro-graphql-react";
 
 const client = new Client({
   endpoint: "/graphql",
@@ -31,8 +31,9 @@ const client = new Client({
   cacheSize: 3
 });
 
+setDefaultClient(client);
+
 @query(
-  client,
   props => ({
     query: `
     query ALL_BOOKS ($page: Int) {
@@ -50,7 +51,6 @@ const client = new Client({
   { mapProps: props => ({ newProps: props }), shouldQueryUpdate: ({ props }) => props.page % 2 }
 )
 @mutation(
-  client,
   `mutation modifyBook($_id: String, $title: String) {
     updateBook(_id: $_id, Updates: { title: $title }) {
       success
